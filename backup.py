@@ -95,8 +95,8 @@ def export(mlist: MList, cookies: dict) -> MList:
 
 
 def zip_all(mlists: Iterable[MList], zip_fname=ZIP_FNAME):
-    """
-    Write all downloaded movielists into a zip archive.
+    """Write all downloaded movielists into a zip archive.
+
     A file with original list names (quoted if multi-line) is also added to the archive.
     """
     with zipfile.ZipFile(zip_fname, mode='w', compression=zipfile.ZIP_DEFLATED) as zf:
@@ -118,7 +118,27 @@ def backup():
     zip_all(export(ml, cookies) for ml in mlists)
 
 
+def pause_before_exit_if_run_with_dblclick_on_win():
+    """Pause before exiting if a script is launched with a double click on Windows.
+
+    This will cause the script to show a standard "Press any key" prompt even if it crashes,
+    keeping a console window visible.
+    Works only on Python 3.3+, older versions have "explorer.exe" as a parent process.
+    """
+    def prompt():
+        try:
+            import psutil
+            if psutil.Process().parent().name() == 'py.exe':
+                os.system('pause')
+        except ImportError:
+            pass
+
+    import os
+    if os.name == 'nt':
+        import atexit
+        atexit.register(prompt)
+
+
 if __name__ == '__main__':
-    import atexit
-    atexit.register(input, '\nPress Enter to continue...')
+    pause_before_exit_if_run_with_dblclick_on_win()
     backup()
