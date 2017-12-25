@@ -4,7 +4,7 @@ import re
 import time
 import zipfile
 from pathlib import Path
-from typing import Iterable, Generator, Dict
+from typing import Dict, Generator, Iterable
 
 import requests
 import unidecode
@@ -129,6 +129,7 @@ def pause_before_exit_if_run_with_dblclick_on_win():
         try:
             import psutil
             if psutil.Process().parent().name() == 'py.exe':
+                print()
                 os.system('pause')
         except ImportError:
             pass
