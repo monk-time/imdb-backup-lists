@@ -118,28 +118,27 @@ def backup():
     zip_all(export(ml, cookies) for ml in mlists)
 
 
-def pause_before_exit_if_run_with_dblclick_on_win():
-    """Pause before exiting if a script is launched with a double click on Windows.
+def pause_before_exit_unless_run_with_flag():
+    """Pause the script before exiting unless it was run with --nopause.
 
     This will cause the script to show a standard "Press any key" prompt even if it crashes,
-    keeping a console window visible.
-    Works only on Python 3.3+, older versions have "explorer.exe" as a parent process.
+    keeping a console window visible when it wasn't launched in a terminal
+    (e.g. by double-click the file on Windows).
     """
-    def prompt():
-        try:
-            import psutil
-            if psutil.Process().parent().name() == 'py.exe':
-                print()
-                os.system('pause')
-        except ImportError:
-            pass
 
-    import os
-    if os.name == 'nt':
+    def prompt():
+        input('\nPress <ENTER> to exit ... ')
+
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-n', '--nopause', action='store_true',
+                        help="don't pause the script before exiting")
+
+    if not parser.parse_args().nopause:
         import atexit
         atexit.register(prompt)
 
 
 if __name__ == '__main__':
-    pause_before_exit_if_run_with_dblclick_on_win()
+    pause_before_exit_unless_run_with_flag()
     backup()

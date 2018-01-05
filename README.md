@@ -21,12 +21,6 @@ Otherwise you can run it from the source code:
    $ pip install requests beautifulsoup4 unidecode
    ```
 
-   Optional requirement: if you prefer to launch python scripts on Windows by double-clicking on them, also install `psutil` to force the console window to stay open:
-
-   ```console
-   $ pip install psutil
-   ```
-   
 3. Download `imdb_backup.py` from the repo.
    
 ## How to run:
@@ -43,9 +37,16 @@ Otherwise you can run it from the source code:
    
 2. Create a new file `imdb_cookie.txt` in the script directory and paste the cookie into it. 
 
-3. Depending on how you've installed the tool:
-   - double click on `imdb_backup.exe` 
-   - double click on `imdb_backup.py` 
-   - `$ python imdb_backup.py`
+3. Use any of the following steps to run the tool (depending on which file you've downloaded):
+   - Executable (`imdb_backup.exe`):
+     - double click on the file
+     - or type `$ imdb_backup.exe --nopause` in the command line
+   - Script (`imdb_backup.py`):
+     - double click on the file 
+     - or type `$ python imdb_backup.py --nopause` in the command line
 
 4. After the tool has finished running, `imdb_exported_lists.zip` should appear in your working directory.
+
+## Building
+
+`$ pyinstaller --onefile imdb_backup.py`
