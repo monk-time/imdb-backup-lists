@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import re
 import time
 import zipfile
@@ -100,14 +101,17 @@ def zip_all(mlists: Iterable[MList], zip_fname=ZIP_FNAME):
     A file with original list names (quoted if multi-line) is also added to the archive.
     """
     with zipfile.ZipFile(zip_fname, mode='w', compression=zipfile.ZIP_DEFLATED) as zf:
-        titles = ''
+        titles = []
         for ml in mlists:
             print('  ->', ml['fname'])
             zf.writestr(ml['fname'], ml['content'])
-            # new list system allows list titles to be multi-line
-            title = f'"{ml["title"]}"' if '\n' in ml['title'] else ml['title']
-            titles += f'{ml["fname"]}: {title}\n'
-        zf.writestr('lists.txt', titles)
+            # After the Dec'17 redesign lists on IMDb can have multi-line titles
+            title = ml['title']
+            if '\n' in title:
+                # zipfile.writestr doesn't do automatic line ending conversion
+                title = f'"{title}"'.replace('\n', os.linesep)
+            titles.append(f'{ml["fname"]}: {title}')
+        zf.writestr('lists.txt', os.linesep.join(titles))
 
 
 def backup():
