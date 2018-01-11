@@ -13,6 +13,8 @@ from bs4 import BeautifulSoup
 
 COOKIE_FNAME = 'imdb_cookie.txt'
 ZIP_FNAME = 'imdb_exported_lists.zip'
+README_REF = 'For more info check README.md.\n' \
+             '[https://github.com/monk-time/imdb-backup-lists/blob/master/README.md]'
 
 MList = Dict[str, str]
 
@@ -36,7 +38,7 @@ def load_imdb_cookies():
         return {'id': cookie_path.read_text().strip()}
     else:
         raise FileNotFoundError(f'\n\nCreate a file "{COOKIE_FNAME}" in the script directory\n'
-                                'and put your IMDb cookie inside.\nFor more info see README.md.')
+                                f'and put your IMDb cookie inside.\n{README_REF}')
 
 
 def fetch_userid(cookies: dict) -> str:
@@ -46,8 +48,8 @@ def fetch_userid(cookies: dict) -> str:
     m = re.search(r'ur\d+', r.headers['Location'])
     if not m:
         raise Exception("\n\nCan't log into IMDb.\n"
-                        f"Make sure that your IMDb cookie in {COOKIE_FNAME} is correct.\n"
-                        'For more info see README.md.')
+                        f'Make sure that your IMDb cookie in {COOKIE_FNAME} is correct.\n'
+                        f'{README_REF}')
     return m.group()
 
 
