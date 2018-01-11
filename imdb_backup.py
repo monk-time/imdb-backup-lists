@@ -2,6 +2,7 @@
 
 import os
 import re
+import sys
 import time
 import zipfile
 from pathlib import Path
@@ -31,7 +32,9 @@ def slugify(s: str) -> str:
 
 
 def load_imdb_cookies():
-    script_path = Path(__file__).resolve().parent
+    """Read an IMDb 'id' cookie from the folder containing the script or executable."""
+    # https://pyinstaller.readthedocs.io/en/stable/runtime-information.html#using-sys-executable-and-sys-argv-0
+    script_path = Path(sys.argv[0]).resolve().parent
     cookie_path = script_path / COOKIE_FNAME
 
     if cookie_path.exists():
