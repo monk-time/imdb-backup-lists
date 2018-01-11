@@ -4,7 +4,7 @@ A simple tool to backup all your lists from IMDb including your watchlist and ra
 
 ## Installation:
 
-The easiest way to run this tool is to download a portable executable from the [Releases](https://github.com/monk-time/imdb-backup-lists/releases) tab (only for Windows 7 atm, but it *might* work on other versions all well). The executable is created with PyInstaller but is *not* an installer. 
+The easiest way to run this tool on Windows is to download a portable executable from the [Releases](https://github.com/monk-time/imdb-backup-lists/releases) tab. The executable is created with PyInstaller but is *not* an installer. 
 
 Otherwise you can run it from the source code:
 
@@ -18,7 +18,7 @@ Otherwise you can run it from the source code:
 2. Install `requests`, `beautifulsoup4` and `unidecode` libraries:
 
    ```console
-   $ pip install requests beautifulsoup4 unidecode
+   $ pip3 install requests beautifulsoup4 unidecode
    ```
 
 3. Download `imdb_backup.py` from the repo.
