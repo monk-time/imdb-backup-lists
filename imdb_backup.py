@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import json
 import os
 import re
 import sys
@@ -12,7 +12,7 @@ import requests
 import unidecode
 from bs4 import BeautifulSoup
 
-COOKIE_FNAME = 'imdb_cookie.txt'
+COOKIE_FNAME = 'imdb_cookie.json'
 ZIP_FNAME = 'imdb_exported_lists.zip'
 README_REF = 'For more info check README.md.\n' \
              '[https://github.com/monk-time/imdb-backup-lists/blob/master/README.md]'
@@ -38,7 +38,10 @@ def load_imdb_cookies():
     cookie_path = script_path / COOKIE_FNAME
 
     if cookie_path.exists():
-        return {'id': cookie_path.read_text().strip()}
+        cookies = json.loads(cookie_path.read_text())
+        if not ('id' in cookies and 'sid' in cookies):
+            raise ValueError(f'\n\n{COOKIE_FNAME} must contain both "id" and "sid" cookies.')
+        return cookies
     else:
         raise FileNotFoundError(f'\n\nCreate a file "{COOKIE_FNAME}" in the script directory\n'
                                 f'and put your IMDb cookie inside.\n{README_REF}')
@@ -46,7 +49,7 @@ def load_imdb_cookies():
 
 def fetch_userid(cookies: dict) -> str:
     """User ID is required for exporting any lists. Cookie validity will also be checked here."""
-    r = requests.head('http://www.imdb.com/profile', cookies=cookies)
+    r = requests.head('https://www.imdb.com/profile', cookies=cookies)
     r.raise_for_status()
     m = re.search(r'ur\d+', r.headers['Location'])
     if not m:
@@ -60,7 +63,7 @@ def get_fname(url: str, title: str) -> str:
     """Turn an IMDb list into {LIST_OR_USER_ID}_{TITLE_SLUG}.csv."""
     match = re.search(r"..\d{6,}", url, re.MULTILINE)
     if not match:
-        raise Exception(f'Can\'t extract list/user ID from {url} for the list "{title}"')
+        raise Exception(f'\n\nCan\'t extract list/user ID from {url} for the list "{title}"')
     return match.group() + '_' + slugify(title) + '.csv'
 
 

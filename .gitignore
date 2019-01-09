@@ -5,5 +5,5 @@ build/
 dist/
 *.spec
 
-*.txt
+*.json
 *.zip
