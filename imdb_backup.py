@@ -95,7 +95,7 @@ def fetch_lists_info(userid: str, cookies: dict) -> Generator[Dict, None, None]:
 
 def export(mlist: MList, cookies: dict) -> MList:
     """All requests are throttled just in case."""
-    time.sleep(0.2)
+    time.sleep(0.5)
     print('Downloading:', mlist['title'].replace('\n', ' '))
     r = requests.get(f'http://www.imdb.com{mlist["url"]}export', cookies=cookies)
     r.raise_for_status()
