@@ -1,4 +1,4 @@
-# icm-backup-lists
+# imdb-backup-lists
 
 A simple tool to backup all your lists from IMDb including your watchlist and ratings. Creates a .zip archive with .csv files exported from the site. To prevent filesystem errors all personal lists are renamed to `ls0XXXXXXXX_latinized-list-name.csv`, but all original list titles (including multiline ones) are preserved in `titles.txt` in the same archive.
 
@@ -46,10 +46,10 @@ Otherwise you can run it from the source code:
 3. Use any of the following steps to run the tool (depending on which file you've downloaded):
    - Executable (`imdb_backup.exe`):
      - double click on the file
-     - or type `$ imdb_backup.exe --nopause` in the command line
+     - or type `imdb_backup.exe --nopause` in the command line
    - Script (`imdb_backup.py`):
      - double click on the file 
-     - or type `$ python imdb_backup.py --nopause` in the command line
+     - or type `python imdb_backup.py --nopause` in the command line
 
 4. After the tool has finished running, `imdb_exported_lists.zip` should appear in your working directory.
 
