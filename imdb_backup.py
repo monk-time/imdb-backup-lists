@@ -31,12 +31,9 @@ def slugify(s: str) -> str:
     return s
 
 
-def load_imdb_cookies():
+def load_imdb_cookies(cookie_path):
     """Read an IMDb 'id' cookie from the folder containing the script or executable."""
     # https://pyinstaller.readthedocs.io/en/stable/runtime-information.html#using-sys-executable-and-sys-argv-0
-    script_path = Path(sys.argv[0]).resolve().parent
-    cookie_path = script_path / COOKIE_FNAME
-
     if cookie_path.exists():
         cookies = json.loads(cookie_path.read_text())
         if not ('id' in cookies and 'sid' in cookies):
@@ -122,8 +119,8 @@ def zip_all(mlists: Iterable[MList], zip_fname=ZIP_FNAME):
         zf.writestr('lists.txt', os.linesep.join(titles))
 
 
-def backup():
-    cookies = load_imdb_cookies()
+def backup(cookie_path):
+    cookies = load_imdb_cookies(cookie_path)
     userid = fetch_userid(cookies)
     print(f'Successfully logged in as user {userid}')
     mlists = fetch_lists_info(userid, cookies)
@@ -135,7 +132,7 @@ def pause_before_exit_unless_run_with_flag():
 
     This will cause the script to show a standard "Press any key" prompt even if it crashes,
     keeping a console window visible when it wasn't launched in a terminal
-    (e.g. by double-click the file on Windows).
+    (e.g. by double-clicking the file on Windows).
     """
 
     def prompt():
@@ -143,14 +140,21 @@ def pause_before_exit_unless_run_with_flag():
 
     import argparse
     parser = argparse.ArgumentParser()
+    # Optional positional argument for the input file with cookies
+
+    parser.add_argument('path', nargs='?', type=Path,
+                        default=Path(sys.argv[0]).resolve().parent / COOKIE_FNAME,
+                        help="path to the .json file with IMDb cookies")
     parser.add_argument('-n', '--nopause', action='store_true',
                         help="don't pause the script before exiting")
 
-    if not parser.parse_args().nopause:
+    args = parser.parse_args()
+    if not args.nopause:
         import atexit
         atexit.register(prompt)
+
+    backup(cookie_path=args.path)
 
 
 if __name__ == '__main__':
     pause_before_exit_unless_run_with_flag()
-    backup()
