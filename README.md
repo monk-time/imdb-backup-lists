@@ -33,7 +33,7 @@ Otherwise you can run it from the source code:
       - Chrome: ⫶ → More tools → Developer tools → Application tab<br><br>
         ![Chrome](images/chrome.png)
    3. Expand "Cookies" in the left panel and select `http://www.imdb.com`.
-   4. Find rows named "id" and "sid", double click on their cells in the "Value" column and copy them.  
+   4. Find rows named "uu" and "session-id", double click on their cells in the "Value" column and copy them.
    
 2. Create a new file `imdb_cookie.json` in the script directory and paste the following data into it, replacing ellipses with your cookies from the previous step:
    ```json
