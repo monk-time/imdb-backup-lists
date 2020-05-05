@@ -65,7 +65,7 @@ def get_fname(url: str, title: str) -> str:
 
 
 def fetch_lists_info(userid: str, cookies: dict) -> Generator[Dict, None, None]:
-    r = requests.get(f'http://www.imdb.com/user/{userid}/lists', cookies=cookies)
+    r = requests.get(f'https://www.imdb.com/user/{userid}/lists', cookies=cookies)
     r.raise_for_status()
 
     # Fetch two special lists: ratings and watchlist
@@ -74,7 +74,7 @@ def fetch_lists_info(userid: str, cookies: dict) -> Generator[Dict, None, None]:
            'fname': get_fname(userid, 'ratings'),
            'title': 'Ratings'}
     # /lists doesn't have a link for watchlist that can be used for exporting at all
-    r_wl = requests.get(f'http://www.imdb.com/user/{userid}/watchlist', cookies=cookies)
+    r_wl = requests.get(f'https://www.imdb.com/user/{userid}/watchlist', cookies=cookies)
     listid = BeautifulSoup(r_wl.text, 'html.parser').find('meta', property='pageId').get('content')
     yield {'url': f'/list/{listid}/',
            'fname': get_fname(userid, 'watchlist'),
@@ -94,7 +94,7 @@ def export(mlist: MList, cookies: dict) -> MList:
     """All requests are throttled just in case."""
     time.sleep(0.5)
     print('Downloading:', mlist['title'].replace('\n', ' '))
-    r = requests.get(f'http://www.imdb.com{mlist["url"]}export', cookies=cookies)
+    r = requests.get(f'https://www.imdb.com{mlist["url"]}export', cookies=cookies)
     r.raise_for_status()
     mlist['content'] = r.content
     return mlist
