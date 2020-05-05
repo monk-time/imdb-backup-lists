@@ -12,6 +12,7 @@ import requests
 import unidecode
 from bs4 import BeautifulSoup
 
+REQUIRED_COOKIES = {'at-main', 'ubid-main', 'uu'}
 COOKIE_FNAME = 'imdb_cookie.json'
 ZIP_FNAME = 'imdb_exported_lists.zip'
 README_REF = 'For more info check README.md.\n' \
@@ -36,8 +37,9 @@ def load_imdb_cookies(cookie_path):
     # https://pyinstaller.readthedocs.io/en/stable/runtime-information.html#using-sys-executable-and-sys-argv-0
     if cookie_path.exists():
         cookies = json.loads(cookie_path.read_text())
-        if not ('id' in cookies and 'sid' in cookies):
-            raise ValueError(f'\n\n{COOKIE_FNAME} must contain both "id" and "sid" cookies.')
+        if not REQUIRED_COOKIES <= set(cookies):
+            raise ValueError(f'\n\n{COOKIE_FNAME} must contain the following cookies: '
+                             f'{", ".join(REQUIRED_COOKIES)}.')
         return cookies
     else:
         raise FileNotFoundError(f'\n\nCreate a file "{COOKIE_FNAME}" in the script directory\n'
