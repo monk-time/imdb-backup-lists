@@ -6,7 +6,7 @@ import sys
 import time
 import zipfile
 from pathlib import Path
-from typing import Dict, Generator, Iterable
+from typing import Dict, Generator, Iterable, Union
 
 import requests
 import unidecode
@@ -17,7 +17,7 @@ ZIP_FNAME = 'imdb_exported_lists.zip'
 README_REF = 'For more info check README.md.\n' \
              '[https://github.com/monk-time/imdb-backup-lists/blob/master/README.md]'
 
-MList = Dict[str, str]
+MList = Dict[str, Union[str, bytes]]
 
 
 def slugify(s: str) -> str:
@@ -142,6 +142,7 @@ def pause_before_exit_unless_run_with_flag():
     parser = argparse.ArgumentParser()
     # Optional positional argument for the input file with cookies
 
+    # noinspection PyTypeChecker
     parser.add_argument('path', nargs='?', type=Path,
                         default=Path(sys.argv[0]).resolve().parent / COOKIE_FNAME,
                         help="path to the .json file with IMDb cookies")
