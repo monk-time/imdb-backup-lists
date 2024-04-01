@@ -8,11 +8,11 @@ The easiest way to run this tool on Windows is to download a portable executable
 
 Otherwise you can run it from the source code:
 
-1. Make sure you have Python 3.6+ installed:
+1. Make sure you have Python 3.12+ installed:
 
    ```console
    $ python --version
-   Python 3.6
+   Python 3.12
    ```
 
 2. Install `requests`, `beautifulsoup4` and `unidecode` libraries:

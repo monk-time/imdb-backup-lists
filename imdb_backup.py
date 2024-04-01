@@ -5,8 +5,8 @@ import re
 import sys
 import time
 import zipfile
+from collections.abc import Generator, Iterable
 from pathlib import Path
-from typing import Dict, Generator, Iterable, Union
 
 import requests
 import unidecode
@@ -20,70 +20,72 @@ README_REF = (
     '[https://github.com/monk-time/imdb-backup-lists/blob/master/README.md]'
 )
 
-MList = Dict[str, Union[str, bytes]]
+MList = dict[str, str | bytes]
 
 
 def slugify(s: str) -> str:
-    """
-    Convert to lowercase ASCII with hyphens instead of underscores or spaces.
+    """Convert to lowercase ASCII with hyphens instead of underscores/spaces.
+
     Remove all non-alphanumeric characters and strip
     leading and trailing whitespace.
     """
     s = unidecode.unidecode(s)
     s = re.sub(r'[^\w\s-]', '', s).strip().lower()
-    s = re.sub(r'[-_\s]+', '-', s)
-    return s
+    return re.sub(r'[-_\s]+', '-', s)
 
 
 def load_imdb_cookies(cookie_path):
-    """Read an IMDb 'id' cookie from the folder
-    containing the script or executable.
-    """
+    """Read an IMDb 'id' cookie from the folder with the script or executable."""
     # https://pyinstaller.readthedocs.io/en/stable/runtime-information.html#using-sys-executable-and-sys-argv-0
     if cookie_path.exists():
         cookies = json.loads(cookie_path.read_text())
-        if not REQUIRED_COOKIES <= set(cookies):
-            raise ValueError(
+        if not set(cookies) >= REQUIRED_COOKIES:
+            msg = (
                 f'\n\n{COOKIE_FNAME} must contain the following cookies: '
-                f'{", ".join(REQUIRED_COOKIES)}.'
+                f'{', '.join(REQUIRED_COOKIES)}.'
             )
+            raise ValueError(msg)
         return cookies
-    raise FileNotFoundError(
+    msg = (
         f'\n\nCreate a file "{COOKIE_FNAME}" in the script directory\n'
         f'and put your IMDb cookie inside.\n{README_REF}'
     )
+    raise FileNotFoundError(msg)
 
 
 def fetch_userid(cookies: dict) -> str:
-    """User ID is required for exporting any lists.
+    """Fetch user ID that is required for exporting any lists.
+
     Cookie validity will also be checked here.
     """
     r = requests.head('https://www.imdb.com/profile', cookies=cookies)
     r.raise_for_status()
     m = re.search(r'ur\d+', r.headers['Location'])
     if not m:
-        raise Exception(
+        msg = (
             "\n\nCan't log into IMDb.\n"
             f'Make sure that your IMDb cookie in {COOKIE_FNAME} is correct.\n'
             f'{README_REF}'
         )
+        raise Exception(msg)
     return m.group()
 
 
 def get_fname(url: str, title: str) -> str:
     """Turn an IMDb list into {LIST_OR_USER_ID}_{TITLE_SLUG}.csv."""
-    match = re.search(r"..\d{6,}", url, re.MULTILINE)
+    match = re.search(r'..\d{6,}', url, re.MULTILINE)
     if not match:
-        raise Exception(
-            f'\n\nCan\'t extract list/user ID from {url} '
+        msg = (
+            f"\n\nCan't extract list/user ID from {url} "
             f'for the list "{title}"'
         )
+        raise Exception(msg)
     return match.group() + '_' + slugify(title) + '.csv'
 
 
 def fetch_lists_info(
     userid: str, cookies: dict
-) -> Generator[Dict, None, None]:
+) -> Generator[dict, None, None]:
     r = requests.get(
         f'https://www.imdb.com/user/{userid}/lists', cookies=cookies
     )
@@ -124,7 +126,7 @@ def export(mlist: MList, cookies: dict) -> MList:
     time.sleep(0.5)
     print('Downloading:', mlist['title'].replace('\n', ' '))
     r = requests.get(
-        f'https://www.imdb.com{mlist["url"]}export', cookies=cookies
+        f'https://www.imdb.com{mlist['url']}export', cookies=cookies
     )
     r.raise_for_status()
     mlist['content'] = r.content
@@ -148,7 +150,7 @@ def zip_all(mlists: Iterable[MList], zip_fname=ZIP_FNAME):
             if '\n' in title:
                 # zipfile.writestr doesn't do automatic line ending conversion
                 title = f'"{title}"'.replace('\n', os.linesep)
-            titles.append(f'{ml["fname"]}: {title}')
+            titles.append(f'{ml['fname']}: {title}')
         zf.writestr('lists.txt', os.linesep.join(titles))
 
 
@@ -182,7 +184,7 @@ def pause_before_exit_unless_run_with_flag():
         nargs='?',
         type=Path,
         default=Path(sys.argv[0]).resolve().parent / COOKIE_FNAME,
-        help="path to the .json file with IMDb cookies",
+        help='path to the .json file with IMDb cookies',
     )
     parser.add_argument(
         '-n',
