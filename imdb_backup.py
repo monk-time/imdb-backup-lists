@@ -23,6 +23,14 @@ README_REF = (
 MList = dict[str, str | bytes]
 
 
+class LoginError(Exception):
+    pass
+
+
+class UrlParseError(Exception):
+    pass
+
+
 def slugify(s: str) -> str:
     """Convert to lowercase ASCII with hyphens instead of underscores/spaces.
 
@@ -35,7 +43,7 @@ def slugify(s: str) -> str:
 
 
 def load_imdb_cookies(cookie_path):
-    """Read an IMDb 'id' cookie from the folder with the script or executable."""
+    """Read IMDb cookies from the folder with the script or executable."""
     # https://pyinstaller.readthedocs.io/en/stable/runtime-information.html#using-sys-executable-and-sys-argv-0
     if cookie_path.exists():
         cookies = json.loads(cookie_path.read_text())
@@ -67,7 +75,7 @@ def fetch_userid(cookies: dict) -> str:
             f'Make sure that your IMDb cookie in {COOKIE_FNAME} is correct.\n'
             f'{README_REF}'
         )
-        raise Exception(msg)
+        raise LoginError(msg)
     return m.group()
 
 
@@ -79,7 +87,7 @@ def get_fname(url: str, title: str) -> str:
             f"\n\nCan't extract list/user ID from {url} "
             f'for the list "{title}"'
         )
-        raise Exception(msg)
+        raise UrlParseError(msg)
     return match.group() + '_' + slugify(title) + '.csv'
 
 
@@ -165,9 +173,9 @@ def backup(cookie_path):
 def pause_before_exit_unless_run_with_flag():
     """Pause the script before exiting unless it was run with --nopause.
 
-    This will cause the script to show a standard "Press any key" prompt even if it crashes,
-    keeping a console window visible when it wasn't launched in a terminal
-    (e.g. by double-clicking the file on Windows).
+    This will cause the script to show a standard "Press any key" prompt
+    even if it crashes, keeping a console window visible when it wasn't
+    launched in a terminal (e.g. by double-clicking the file on Windows).
     """
 
     def prompt():
