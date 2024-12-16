@@ -50,7 +50,7 @@ def load_imdb_cookies(cookie_path):
         if not set(cookies) >= REQUIRED_COOKIES:
             msg = (
                 f'\n\n{COOKIE_FNAME} must contain the following cookies: '
-                f'{', '.join(REQUIRED_COOKIES)}.'
+                f'{", ".join(REQUIRED_COOKIES)}.'
             )
             raise ValueError(msg)
         return cookies
@@ -134,7 +134,7 @@ def export(mlist: MList, cookies: dict) -> MList:
     time.sleep(0.5)
     print('Downloading:', mlist['title'].replace('\n', ' '))
     r = requests.get(
-        f'https://www.imdb.com{mlist['url']}export', cookies=cookies
+        f'https://www.imdb.com{mlist["url"]}export', cookies=cookies
     )
     r.raise_for_status()
     mlist['content'] = r.content
@@ -158,7 +158,7 @@ def zip_all(mlists: Iterable[MList], zip_fname=ZIP_FNAME):
             if '\n' in title:
                 # zipfile.writestr doesn't do automatic line ending conversion
                 title = f'"{title}"'.replace('\n', os.linesep)
-            titles.append(f'{ml['fname']}: {title}')
+            titles.append(f'{ml["fname"]}: {title}')
         zf.writestr('lists.txt', os.linesep.join(titles))
 
 
